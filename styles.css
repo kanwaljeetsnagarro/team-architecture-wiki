@@ -282,6 +282,24 @@ pre {
   font-size: 0.86rem;
 }
 
+/* External link indicator for Microsoft Learn */
+a.external-link {
+  position: relative;
+  padding-right: 16px;
+}
+
+a.external-link::after {
+  content: "↗";
+  position: absolute;
+  right: 2px;
+  font-size: 0.85em;
+  opacity: 0.7;
+}
+
+a.external-link:hover::after {
+  opacity: 1;
+}
+
 @media (max-width: 1050px) {
   .shell {
     grid-template-columns: 1fr;
