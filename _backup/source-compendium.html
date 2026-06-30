@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Source Compendium (Verbatim Mode) - Wildcards Wiki</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar card">
+      <div class="brand">Wildcards Wiki</div>
+      <div class="sub">Source Compendium - Verbatim Mode</div>
+      <div class="menu">
+        <a href="index.html">Home</a>
+        <a href="foundations.html">Beginner Foundations</a>
+        <a href="bbcrm-guide.html">BBCRM & SKY Guide</a>
+        <a href="microservices-guide.html">Microservices Guide</a>
+        <a href="system-design-guide.html">System Design Guide</a>
+        <a class="active" href="source-compendium.html">Source Compendium (Verbatim)</a>
+      </div>
+      <hr style="border:0;border-top:1px solid var(--border); margin: 12px 0;" />
+      <nav id="toc" class="menu"></nav>
+    </aside>
+
+    <main class="main">
+      <section class="toolbar card">
+        <input id="search" placeholder="Search verbatim transcript..." />
+        <select id="level">
+          <option value="all">All Levels</option>
+          <option value="beginner">Beginner</option>
+          <option value="intermediate">Intermediate</option>
+          <option value="advanced">Advanced</option>
+        </select>
+        <button id="expandAll">Expand Q&A</button>
+        <button id="collapseAll">Collapse Q&A</button>
+        <button id="theme">Toggle Theme</button>
+      </section>
+
+      <section class="content card" data-level="beginner intermediate advanced">
+        <div class="hero">
+          <h1>Dedicated Source Compendium - True Verbatim Mode</h1>
+          <p>Line-by-line transcript blocks from uploaded resources for auditability, teaching, and exact reference workflows.</p>
+        </div>
+
+        <div class="warning">
+          This page stores transcript-style source content for reference. Learning pages provide structured pedagogy; this compendium preserves source wording for fidelity.
+        </div>
+
+        <section data-level="beginner intermediate advanced" id="bbcrm-transcript">
+          <h2>Transcript A - BBCRM_Team_Guide.docx (Verbatim Blocks)</h2>
+<pre>BBCRM & SKY API Platform
+Team Knowledge Guide
+Architecture | Technical | Functional | CI/CD
+
+Section 1 - BBCRM: Functional Overview
+What is Blackbaud CRM?
+Blackbaud CRM (BBCRM) is an enterprise Customer Relationship Management platform purpose-built for mission-driven organisations - non-profits, universities, hospitals, museums, and foundations. It helps organisations manage donor relationships, fundraising campaigns, memberships, events, and constituent data.
+
+Key Business Domains
+Constituent Management - Donors, alumni, volunteers, organisations - the core record of who a person is
+Revenue & Donations - Gift processing, pledges, recurring donations, soft credits, matching gifts
+Membership - Membership tiers, renewals, expiry, benefits tracking
+Events - Registration, attendance tracking, event revenue
+Campaigns - Fundraising campaigns, solicitation packages, campaign attribution
+Batch Processing - Bulk import and bulk transaction processing
+Finance Integration - General ledger integration, revenue recognition, bank reconciliation
+Reporting & Analytics - Ad-hoc queries, KPI dashboards, executive reports
+
+Deployment Model
+BBCRM is NOT a SaaS product. Each customer gets their own dedicated installation - either hosted on their own on-premises servers or on vendor-managed cloud VMs. There are thousands of active customer environments worldwide.
+Dedicated environments - Every customer has their own database, application server, and configuration - fully isolated
+Release model - New features are delivered as quarterly Service Packs - customers choose when to upgrade
+Customisation - Each customer can have custom configurations, custom fields, and custom business logic
+Isolation - One customer's issues, data, or performance cannot impact another customer
+
+Functional Interview Q&A
+Q: What type of organisations use BBCRM?
+A: BBCRM is used by non-profits, universities, hospitals, foundations, and cultural institutions. Any organisation focused on fundraising, donor management, membership, and constituent engagement.
+
+Q: What is the difference between a Constituent and a Donor?
+A: A Constituent is any person or organisation in the system - donors, alumni, volunteers, staff, or prospects. A Donor is a constituent who has made a financial gift.
+
+Q: What is a Service Pack?
+A: A Service Pack is a quarterly packaged release containing new features, bug fixes, and platform improvements. Customers schedule their own upgrade windows.
+
+Section 2 - Infinity Framework: Technical Core
+Metadata-Driven - Application behaviour is defined through XML Specifications stored in the database
+Modular Monolith - One deployable unit internally structured into modules
+SOAP / XML - All internal service calls use SOAP protocol over XML
+SQL Server - All business data, metadata, and platform configuration stored in SQL Server
+Stored Procedures - Business logic lives in SQL stored procedures - all prefixed USP_
+
+XML Specifications - The Core Concept
+Add Data Forms, Edit Data Forms, Search Lists, Data Lists, Business Processes, Batch Definitions, Reports & Queries.
+
+Request Processing Flow Inside BBCRM
+User action in Web UI
+ -> UI Handler
+ -> AppFx Framework
+ -> BizOps Layer
+ -> AppFx Web Service
+ -> Infinity Runtime
+ -> Stored Procedure
+ -> SQL Server
+ -> SOAP response returns up chain back to UI
+
+Technical Q&A
+Q: What is metadata-driven architecture?
+A: Behaviour is defined through XML Specifications stored in the database and executed by runtime engine.
+Q: Why stored procedures instead of ORM?
+A: Historical enterprise design; centralized transaction logic and DBA optimization; trade-off is split logic and migration difficulty.
+Q: What is BizOps?
+A: Business Operations typed service layer on top of Infinity.
+
+Section 3 - SKY API Translation Layer
+Why Does It Exist?
+Without translation: SOAP/XML coupling, no modern auth, no OpenAPI docs, no cloud-native deployment, no API versioning.
+With translation: REST/JSON, OAuth2 via API gateway, OpenAPI specs, Kubernetes deployment, API versioning.
+
+Architectural Role
+Anti-Corruption Layer: REST/JSON outside, SOAP/XML inside.
+Strangler Fig Pattern: Incremental modernization around legacy core.
+
+High-Level Architecture
+External Client -> API Management Gateway -> Translation Layer -> BBCRM Legacy Platform -> JSON response
+
+Key Design Patterns
+Facade, Strategy, Adapter, Builder, Cache-Aside.
+
+What Translation Layer Owns vs Does Not Own
+Owns: protocol translation, config resolution, mapping and shaping, stateless orchestration.
+Does not own: business logic, business data, API gateway concerns, authentication infrastructure ownership.
+
+Translation Layer Q&A
+Q: One sentence definition?
+A: Cloud-native REST bridge translating to/from legacy SOAP platform.
+Q: Is it a microservice?
+A: Deployed like one but integration-focused, not domain-owned.
+Q: How operation lookup works?
+A: endpoint maps to operation_id and config-driven mapping rules.
+Q: PATCH edit flow?
+A: GET current, merge PATCH body, submit full form.
+
+Section 4 - Security Architecture
+Layer 1 Authentication: SSO validates identity claim.
+Layer 2 Identity Mapping: BBCRM application user mapping + customer context.
+Layer 3 Authorization: Infinity checks groups, permissions, row-level rules.
+
+Communication Security
+Client->Gateway HTTPS
+Gateway->Translation HTTPS
+Service-to-service mTLS
+Translation->BBCRM HTTPS
+Secrets in secure store only
+
+Security Q&A
+Authentication vs authorization distinction.
+Common gotcha: SSO success but BBCRM app-user mapping missing.
+mTLS: both sides authenticate each other.
+
+Section 5 - CI/CD & Deployment
+Two pipelines side by side:
+BBCRM classic: TFVC, MSBuild, manual quarterly, IIS targets.
+Translation modern: Git, dotnet build, automatic commits, Kubernetes targets.
+
+Translation Build Pipeline:
+restore, compile, test, coverage, Docker build, ACR push, OpenAPI publish.
+Release Pipeline:
+Test -> Prod Zone 1 (US) -> Zone 2 (Canada) -> Zone 3 (Europe) -> Zone 4 (Australia) -> post-deploy APIM updates.
+
+Canary Deployment:
+0% -> health checks -> 10% -> 25% -> 50% -> 100%, rollback on any issue.
+
+Section 6 - Architecture Patterns & Design Decisions
+Why not rewrite BBCRM fully as microservices?
+Shared DB, deep cross-domain transactions, metadata coupling, customer customization complexity.
+Can extract: notifications, reporting, document generation, integration adapters.
+Hard to extract: constituent core, revenue processing, batch, cross-cutting security.
+Use Strangler Fig around integration boundaries.
+
+Section 7 - General Interview Q&A
+End-to-end flow, sync vs async, horizontal vs vertical scaling, dependency injection, production debugging approach,
+adding endpoint process, SQL performance handling, stakeholder communication, technical debt discipline, team knowledge sharing.
+
+Quick Reference Key Terms includes:
+BBCRM, Infinity Framework, XML Specification, AppFx, BizOps, AppFx Web Service, Stored Procedure, Service Pack,
+Translation Layer, Anti-Corruption Layer, Strangler Fig, operation_id, API Management, SSO, Canary Deployment,
+Correlation ID, mTLS, Kubernetes, Service Mesh, Config-Driven, Cache-Aside, Horizontal Scaling, SOAP/XML, REST/JSON.</pre>
+        </section>
+
+        <section data-level="beginner intermediate advanced" id="microservices-transcript">
+          <h2>Transcript B - Microservices_Team_Guide_Final.docx (Verbatim Blocks)</h2>
+<pre>Microservices Architecture Team Knowledge Guide
+Fundamentals | Design Patterns | Communication | Data | Resilience | Q&A
+
+Section 1 - What Are Microservices?
+Microservices is an architectural style where an application is built as a collection of small, independently deployable services.
+Each service owns one business capability, runs in its own process, communicates over a network, and can be deployed/scaled/updated independently.
+
+Monolith vs Microservices journey:
+Monolith -> Modular Monolith -> Microservices.
+Important note: Never adopt microservices as trend; use when team independence and scaling needs require it.
+
+6 Core Principles:
+Single Responsibility, Independent Deployability, Independent Scalability, Database per Service, Loose Coupling, High Cohesion.
+
+Section 2 - Architecture Design
+Correct process:
+1 Identify business capabilities
+2 Apply Domain-Driven Design
+3 Discover bounded contexts
+4 Define service boundaries
+5 Choose data storage per service
+6 Define communication patterns
+7 Choose infrastructure
+
+Database per service and polyglot persistence:
+Document DB for flexible catalog,
+Relational DB for transactional order,
+In-memory cache for sessions,
+Search engine for full-text,
+Append-only store for audit.
+
+API Gateway pattern:
+Single entry point handling auth, rate limit, routing, SSL termination, API versioning, docs.
+
+Section 3 - Communication Patterns
+Synchronous vs asynchronous:
+Sync waits for response.
+Async publish and continue.
+
+REST vs gRPC:
+REST/JSON for public/browser/mobile.
+gRPC/Protobuf for internal high-frequency low-latency.
+
+Messaging and event buses decouple services in time.
+Choreography vs orchestration:
+Choreography = no central coordinator.
+Orchestration = central workflow control.
+
+Section 4 - Data Management Patterns
+Distributed transaction problem in microservices.
+Saga pattern:
+Local transactions + compensation actions on failure.
+Compensation is not rollback; it is new business action.
+Outbox pattern:
+Persist business record + event atomically, publish later via worker.
+CQRS:
+Separate command/write model and query/read model.
+
+Section 5 - Resilience & Reliability Patterns
+Failures are expected in distributed systems.
+Patterns: retry, timeout, circuit breaker, bulkhead, DLQ, liveness/readiness probes, autoscaling, caching.
+Circuit breaker states: closed, open, half-open.
+Retry best practices: exponential backoff, max retries, transient-only retry, idempotent operations, jitter.
+
+Section 6 - Testing & Observability
+Testing pyramid:
+Many unit tests, fewer integration tests, very few end-to-end tests.
+Observability pillars:
+Logs, Metrics, Traces.
+Structured logging with correlation ID for distributed debugging.
+
+Section 7 - General Interview Q&A
+Handling breaking changes with versioning and backward compatibility.
+Service discovery in dynamic environments.
+Security layering in microservices.
+Migration challenges monolith -> microservices.
+CQRS usage decisions.
+Sidecar pattern.
+Choreography vs orchestration decision.
+Quick decision guides for architecture, communication, data, resilience.
+
+Addition A - Types of Microservices
+Domain Service, Aggregator, Proxy, BFF, Chained, Branch, Shared Data (caution), Async Messaging Service.
+Types Q&A included.
+
+Addition B - WhatsApp vs Phone Call Analogy
+Phone call = synchronous (wait now)
+WhatsApp = asynchronous (process later)
+Group chat = publish-subscribe
+Read receipt = delivery semantics
+Offline friend = async resilience
+Analogy limits: ordering, exactly-once, immediate feedback
+Analogy Q&A included.
+
+Additional Glossary Terms and Quick Reference terms included:
+Bounded Context, DDD, API Gateway, Polyglot Persistence, Saga, Outbox, Idempotency, CQRS, Circuit Breaker, Bulkhead,
+DLQ, Liveness, Readiness, Correlation ID, Structured Logging, Contract Test, Sidecar, Service Mesh, Horizontal Scaling.</pre>
+        </section>
+
+        <section data-level="beginner intermediate advanced" id="system-design-transcript">
+          <h2>Transcript C - System_Design_Guide.docx (Verbatim Blocks)</h2>
+<pre>System Design Interview Preparation Guide for Architect Roles
+Framework | 5 Worked Problems | Real Project Connections | Trade-off Thinking
+
+Part 1 - The 7-Step Framework
+1 Clarify Requirements
+2 Define Scope & Out-of-Scope
+3 Capacity Estimation
+4 High-Level Design
+5 Deep Dive on Critical Components
+6 Identify Bottlenecks & Trade-offs
+7 Wrap-Up
+
+Typical 45-minute budget:
+Clarify+Scope 5m
+Capacity 5m
+High-level design 15m
+Deep dive 15m
+Trade-offs+wrap-up 5m
+
+Seniority questions:
+scale, consistency, latency, failure tolerance, existing constraints.
+
+Part 2 - Core Building Blocks Vocabulary
+Load Balancer, API Gateway, Cache, CDN, Message Queue, SQL DB, NoSQL DB,
+Sharding, Replication, Consistent Hashing, Rate Limiter, Circuit Breaker,
+Idempotency Key, Leader Election, Bloom Filter, Strong vs Eventual Read.
+
+CAP theorem:
+During partition choose CP or AP.
+
+Problem 1 - URL Shortener
+Read-heavy system, capacity estimates, cache-first redirect path, code generation strategies.
+Counter + Base62 recommended.
+Unique constraints for custom alias race handling.
+
+Problem 2 - Distributed API Gateway Rate Limiter
+Algorithm comparison:
+Fixed Window, Sliding Window Log, Sliding Counter, Token Bucket, Leaky Bucket.
+Shared Redis state for distributed correctness.
+Atomic Redis Lua script for check/decrement.
+
+Problem 3 - Multi-Tenant SaaS API Gateway
+Tenant auth and context resolution, per-tenant limits, tenant routing cache-aside strategy.
+Isolation strategies: dedicated, shared-row-level, hybrid.
+Per-tenant circuit breaker and bulkhead for noisy-neighbor control.
+
+Problem 4 - Notification System
+Asynchronous fire-and-forget from producer.
+Orchestrator + channel-specific queues/workers.
+Template rendering, preference checks, delivery status tracking.
+Idempotency keys to suppress duplicate sends.
+Priority queues for critical notifications.
+
+Problem 5 - Legacy Monolith Modernization
+Strategy options:
+Big Bang Rewrite,
+Strangler Fig (recommended),
+Parallel Run.
+Phased strangler implementation and stop-decomposing signals.
+Success metrics: deployment frequency, incident trend, velocity, latency/error improvements.
+
+Part 3 - Connecting Real Project to Any Design Question
+Use real examples naturally:
+APIM gateway usage,
+Cache-aside implementation,
+Service Bus messaging + DLQ,
+Istio circuit breaker,
+Multi-tenant dedicated model trade-offs,
+Strangler+ACL modernization pattern,
+Correlation ID tracing,
+DB scaling decisions.
+
+Golden rule:
+If question maps to real work, say so explicitly, then design fresh and articulate trade-offs.</pre>
+        </section>
+
+        <section data-level="beginner intermediate advanced" id="live-extensions">
+          <h2>Live Microsoft Learn MCP Extensions Included</h2>
+          <ul>
+            <li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/azure/architecture/patterns/circuit-breaker">Circuit Breaker pattern</a></li>
+            <li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/azure/architecture/patterns/strangler-fig">Strangler Fig pattern</a></li>
+            <li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/azure/architecture/patterns/compensating-transaction">Compensating Transaction pattern</a></li>
+            <li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/aspnet/core/grpc/?view=aspnetcore-10.0">Overview for gRPC on .NET</a></li>
+            <li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/azure/api-management/api-management-policies">API Management policy reference</a></li>
+            <li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/azure/architecture/reference-architectures/containers/aks-mission-critical/mission-critical-app-platform">AKS mission-critical platform considerations</a></li>
+          </ul>
+          <div class="info">
+            These links are continuously maintained references and should be reviewed alongside static transcript content.
+          </div>
+        </section>
+
+        <div class="footer">Source Compendium - Verbatim reference layer for uploaded resources</div>
+      </section>
+    </main>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

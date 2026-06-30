@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>System Design Interview Preparation Guide - Wildcards Wiki</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar card">
+      <div class="brand">Wildcards Wiki</div>
+      <div class="sub">System Design Interview Preparation</div>
+      <div class="menu">
+        <a href="index.html">Home</a>
+        <a href="foundations.html">Beginner Foundations</a>
+        <a href="bbcrm-guide.html">BBCRM & SKY Guide</a>
+        <a href="microservices-guide.html">Microservices Guide</a>
+        <a class="active" href="system-design-guide.html">System Design Guide</a>
+        <a href="source-compendium.html">Source Compendium (Verbatim)</a>
+      </div>
+      <hr style="border:0;border-top:1px solid var(--border); margin: 12px 0;" />
+      <nav id="toc" class="menu"></nav>
+    </aside>
+
+    <main class="main">
+      <section class="toolbar card">
+        <input id="search" placeholder="Search framework, trade-offs, worked problems..." />
+        <select id="level">
+          <option value="all">All Levels</option>
+          <option value="beginner">Beginner</option>
+          <option value="intermediate">Intermediate</option>
+          <option value="advanced">Advanced</option>
+        </select>
+        <button id="expandAll">Expand Q&A</button>
+        <button id="collapseAll">Collapse Q&A</button>
+        <button id="theme">Toggle Theme</button>
+      </section>
+
+      <section class="content card" data-level="intermediate advanced">
+        <div class="hero">
+          <h1>System Design Interview Preparation Guide for Architect Roles</h1>
+          <p>Framework, building blocks, five solved design problems, and real-project connection strategy.</p>
+        </div>
+
+        <section data-level="intermediate advanced" id="p1-framework">
+          <h2>Part 1 - The 7-Step Framework</h2>
+          <p>System design interviews test structured thinking and trade-off clarity, not memorized diagrams.</p>
+          <table>
+            <tr><th>Step</th><th>Goal</th><th>Typical time</th></tr>
+            <tr><td>1. Clarify requirements</td><td>Functional + non-functional scope questions</td><td>3-5 min</td></tr>
+            <tr><td>2. Define in/out scope</td><td>State what will and will not be covered</td><td>1-2 min</td></tr>
+            <tr><td>3. Capacity estimation</td><td>RPS, data size, growth, peak assumptions</td><td>3-5 min</td></tr>
+            <tr><td>4. High-level design</td><td>Major boxes and interactions</td><td>10-15 min</td></tr>
+            <tr><td>5. Deep dive</td><td>Critical components and failure handling</td><td>10-15 min</td></tr>
+            <tr><td>6. Bottlenecks + trade-offs</td><td>Name what breaks first and chosen compromise</td><td>5 min</td></tr>
+            <tr><td>7. Wrap-up</td><td>Summary and what you'd do next</td><td>2 min</td></tr>
+          </table>
+          <h3>Questions that signal seniority</h3>
+          <ul>
+            <li>Scale: users, peak RPS, read vs write ratio</li>
+            <li>Consistency: strong vs eventual needs</li>
+            <li>Latency: user-facing SLA expectations</li>
+            <li>Failure tolerance: acceptable degradation and data loss tolerance</li>
+            <li>Constraints: legacy integrations and technology bounds</li>
+          </ul>
+        </section>
+
+        <section data-level="intermediate advanced" id="p2-blocks">
+          <h2>Part 2 - Core Building Blocks Vocabulary</h2>
+          <table>
+            <tr><th>Block</th><th>What it solves</th><th>When to use</th></tr>
+            <tr><td>Load Balancer</td><td>Traffic distribution</td><td>Avoid single-server overload</td></tr>
+            <tr><td>API Gateway</td><td>Auth, routing, policy centralization</td><td>External client entry point</td></tr>
+            <tr><td>Cache</td><td>Fast repeated reads</td><td>Reduce DB load and latency</td></tr>
+            <tr><td>CDN</td><td>Edge caching</td><td>Static assets for global users</td></tr>
+            <tr><td>Message Queue</td><td>Async decoupling</td><td>Background workflows</td></tr>
+            <tr><td>SQL DB</td><td>Structured ACID data</td><td>Transactional relational use cases</td></tr>
+            <tr><td>NoSQL DB</td><td>Flexible schema and scale</td><td>High-volume, low-latency reads/writes</td></tr>
+            <tr><td>Sharding</td><td>Split large DB load</td><td>Single server no longer enough</td></tr>
+            <tr><td>Replication</td><td>Read scale and redundancy</td><td>Primary-write, replica-read patterns</td></tr>
+            <tr><td>Consistent Hashing</td><td>Low key movement on scaling</td><td>Caches/shards across nodes</td></tr>
+            <tr><td>Rate Limiter</td><td>Request control</td><td>Protect backend from abuse/spikes</td></tr>
+            <tr><td>Circuit Breaker</td><td>Cascading failure protection</td><td>Downstream instability</td></tr>
+            <tr><td>Idempotency key</td><td>Retry deduplication</td><td>Payments/critical side-effect writes</td></tr>
+            <tr><td>Leader Election</td><td>Single coordinator among peers</td><td>Avoid conflicting distributed actions</td></tr>
+            <tr><td>Bloom Filter</td><td>Fast probabilistic non-membership test</td><td>Skip expensive lookups</td></tr>
+          </table>
+
+          <h3>CAP theorem</h3>
+          <p>
+            Under network partition, distributed systems choose between consistency and availability (partition tolerance is non-negotiable in real systems).
+          </p>
+          <table>
+            <tr><th>Choice</th><th>Meaning</th></tr>
+            <tr><td>CP</td><td>Prefer consistent state, may reject requests during partition</td></tr>
+            <tr><td>AP</td><td>Prefer availability, may serve temporarily stale data</td></tr>
+          </table>
+        </section>
+
+        <section data-level="advanced" id="problem1">
+          <h2>Problem 1 - Design a URL Shortener</h2>
+          <h3>Clarify requirements</h3>
+          <ul>
+            <li>Shorten long URL to short code</li>
+            <li>Redirect short URL to original</li>
+            <li>Optional alias, expiry, click analytics</li>
+          </ul>
+          <h3>Capacity assumptions</h3>
+<pre>100M new URLs/month
+10B redirects/month
+Read:Write ~100:1
+~3TB storage over 5 years</pre>
+          <h3>High-level design</h3>
+<pre>Client -> LB -> API Gateway
+Write path: shorten service -> code generation -> DB -> cache
+Read path: redirect service -> cache hit/miss -> DB -> 302</pre>
+          <h3>Short code generation trade-off</h3>
+          <table>
+            <tr><th>Approach</th><th>Pros</th><th>Cons</th></tr>
+            <tr><td>Hash + truncate</td><td>Simple deterministic</td><td>Collision handling required</td></tr>
+            <tr><td>Counter + Base62</td><td>No collisions, deterministic</td><td>Needs reliable distributed ID strategy</td></tr>
+          </table>
+          <details>
+            <summary>Q: Custom alias without race condition?</summary>
+            <p>Enforce DB unique constraint and handle unique-violation conflict (409). Do not rely on check-then-write only.</p>
+          </details>
+        </section>
+
+        <section data-level="advanced" id="problem2">
+          <h2>Problem 2 - Design a Distributed Rate Limiter</h2>
+          <h3>Algorithm comparison</h3>
+          <table>
+            <tr><th>Algorithm</th><th>Strength</th><th>Weakness</th></tr>
+            <tr><td>Fixed Window</td><td>Simple</td><td>Boundary burst issue</td></tr>
+            <tr><td>Sliding Log</td><td>Accurate</td><td>High memory usage</td></tr>
+            <tr><td>Sliding Counter</td><td>Balanced accuracy/memory</td><td>Slight approximation</td></tr>
+            <tr><td>Token Bucket</td><td>Allows controlled bursts</td><td>More complex implementation</td></tr>
+            <tr><td>Leaky Bucket</td><td>Smooth output rate</td><td>Less burst-friendly for clients</td></tr>
+          </table>
+          <div class="info">
+            Interview recommendation: token bucket for client-facing APIs + sliding-window counter for backend shaping.
+          </div>
+<pre>Gateway instances -> shared Redis state
+Use atomic Lua script for check-and-decrement
+Avoid per-instance memory counters (incorrect at scale)</pre>
+          <details>
+            <summary>Q: API key limit + unauthenticated global limit together?</summary>
+            <p>Apply layered checks with separate keys: rate_limit:ip and rate_limit:api_key. Both must pass.</p>
+          </details>
+        </section>
+
+        <section data-level="advanced" id="problem3">
+          <h2>Problem 3 - Multi-Tenant SaaS API Gateway</h2>
+          <h3>Requirements highlights</h3>
+          <ul>
+            <li>Tenant-aware routing and isolation</li>
+            <li>Auth and per-tier rate limits</li>
+            <li>Low gateway overhead latency</li>
+            <li>High availability for all tenants</li>
+          </ul>
+          <h3>Tenant resolution options</h3>
+          <table>
+            <tr><th>Approach</th><th>Detail</th><th>Trade-off</th></tr>
+            <tr><td>Token claim</td><td>Tenant ID embedded in JWT/OAuth</td><td>Fastest request-time lookup</td></tr>
+            <tr><td>Header-based</td><td>Tenant-ID header</td><td>Needs additional verification</td></tr>
+            <tr><td>Subdomain-based</td><td>tenantX.api.company.com</td><td>Good for portal-style patterns</td></tr>
+          </table>
+          <h3>Isolation strategies</h3>
+          <table>
+            <tr><th>Strategy</th><th>Strength</th><th>Cost/Risk</th></tr>
+            <tr><td>Dedicated infrastructure</td><td>Strongest isolation</td><td>Highest cost</td></tr>
+            <tr><td>Shared with row-level isolation</td><td>Cost-efficient</td><td>Data leak risk if filter bug</td></tr>
+            <tr><td>Hybrid</td><td>Tier-based balance</td><td>More operational complexity</td></tr>
+          </table>
+          <details>
+            <summary>Q: One slow tenant backend affecting all?</summary>
+            <p>Use per-tenant circuit breaker and bulkhead resource pools so unhealthy tenant calls cannot starve shared gateway capacity.</p>
+          </details>
+        </section>
+
+        <section data-level="advanced" id="problem4">
+          <h2>Problem 4 - Notification System (Email, SMS, Push)</h2>
+          <h3>High-level asynchronous design</h3>
+<pre>Producer service publishes NotificationRequested event
+Notification orchestrator:
+ - user preference check
+ - template render
+ - channel decision
+Publish to channel queues:
+ - email queue
+ - sms queue
+ - push queue
+Workers call provider APIs and write delivery status logs</pre>
+          <h3>Why separate queues per channel?</h3>
+          <ul>
+            <li>Different provider rate limits</li>
+            <li>Failure isolation across channels</li>
+            <li>Independent retry policy tuning</li>
+          </ul>
+          <h3>Idempotency requirement</h3>
+          <p>Caller-generated idempotency keys prevent duplicate sends across retries and restarts.</p>
+          <details>
+            <summary>Q: How to prioritize critical notifications?</summary>
+            <p>Use priority queues and dedicated worker pools so critical transactional alerts are not delayed by bulk marketing load.</p>
+          </details>
+        </section>
+
+        <section data-level="advanced" id="problem5">
+          <h2>Problem 5 - Legacy Monolith Modernization Strategy</h2>
+          <h3>Strategy options</h3>
+          <table>
+            <tr><th>Strategy</th><th>Trade-off</th></tr>
+            <tr><td>Big bang rewrite</td><td>Cleanest end-state, highest risk and delayed value</td></tr>
+            <tr><td>Strangler Fig</td><td>Lower risk incremental value, longer transition</td></tr>
+            <tr><td>Parallel run</td><td>Highest confidence, highest temporary cost</td></tr>
+          </table>
+          <h3>Incremental strangler phases</h3>
+<pre>Phase 1: Establish seam (facade/ACL)
+Phase 2: Extract low-coupling capabilities
+Phase 3: Add modern integration surface around core
+Phase 4: Reassess what should remain legacy vs extracted</pre>
+          <h3>When not to decompose further</h3>
+          <table>
+            <tr><th>Signal</th><th>Why stop</th></tr>
+            <tr><td>Deep shared DB coupling</td><td>Distributed transaction complexity may outweigh benefit</td></tr>
+            <tr><td>High per-customer customization</td><td>Migration cost multiplies significantly</td></tr>
+            <tr><td>Stable low-change core</td><td>Independent deployability benefit may be marginal</td></tr>
+          </table>
+          <details>
+            <summary>Q: How to measure modernization success?</summary>
+            <p>Track leading indicators: deployment frequency, incident rate, developer velocity, latency/error rate, and user-impact metrics.</p>
+          </details>
+        </section>
+
+        <section data-level="intermediate advanced" id="part3-project-linking">
+          <h2>Part 3 - Connecting Real Project Experience to Any Design Question</h2>
+          <table>
+            <tr><th>Question type</th><th>Real project connection</th><th>Why strong</th></tr>
+            <tr><td>API gateway</td><td>APIM in front of translation layer</td><td>Real auth/routing/rate-limiting production behavior</td></tr>
+            <tr><td>Caching</td><td>Cache-Aside memory layers</td><td>Real staleness vs latency trade-off decisions</td></tr>
+            <tr><td>Async messaging</td><td>Service Bus batch operations</td><td>Real idempotency and DLQ handling</td></tr>
+            <tr><td>Circuit breaker</td><td>Istio breaker on downstream SOAP calls</td><td>Real resilience under unstable dependencies</td></tr>
+            <tr><td>Multi-tenancy</td><td>Dedicated customer environments</td><td>Real isolation vs cost trade-offs</td></tr>
+            <tr><td>Modernization</td><td>Translation layer as Strangler + ACL</td><td>High-credibility architecture strategy example</td></tr>
+            <tr><td>Tracing</td><td>Correlation ID propagation and centralized logs</td><td>Real end-to-end debugging method</td></tr>
+          </table>
+          <div class="success">
+            Golden rule: if question maps to your real work, say it and then design fresh with explicit lessons learned.
+          </div>
+        </section>
+
+        <section data-level="intermediate advanced" id="system-live-learn">
+          <h2>Live Microsoft Learn Extensions for Interview Depth</h2>
+          <ul>
+            <li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/azure/architecture/patterns/circuit-breaker">Circuit Breaker pattern</a> - cite concrete state transitions in resilience deep dives.</li>
+            <li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/azure/architecture/patterns/strangler-fig">Strangler Fig pattern</a> - support modernization strategy answers with phased model.</li>
+            <li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/azure/architecture/patterns/compensating-transaction">Compensating Transaction pattern</a> - strengthen eventual consistency and rollback discussions.</li>
+            <li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/azure/api-management/api-management-policies">APIM policy reference</a> - deepen API gateway operational trade-off answers.</li>
+            <li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/aspnet/core/grpc/?view=aspnetcore-10.0">gRPC on .NET</a> - compare REST vs gRPC with current platform details.</li>
+          </ul>
+        </section>
+
+        <div class="footer">System Design Guide - Framework + 5 worked problems - June 2026</div>
+      </section>
+    </main>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

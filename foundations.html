@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Beginner Foundations - Wildcards Wiki</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar card">
+      <div class="brand">Wildcards Wiki</div>
+      <div class="sub">Beginner Foundations</div>
+      <div class="menu">
+        <a href="index.html">Home</a>
+        <a class="active" href="foundations.html">Beginner Foundations</a>
+        <a href="bbcrm-guide.html">BBCRM & SKY Guide</a>
+        <a href="microservices-guide.html">Microservices Guide</a>
+        <a href="system-design-guide.html">System Design Guide</a>
+        <a href="source-compendium.html">Source Compendium (Verbatim)</a>
+      </div>
+      <hr style="border:0;border-top:1px solid var(--border); margin: 12px 0;" />
+      <nav id="toc" class="menu"></nav>
+    </aside>
+
+    <main class="main">
+      <section class="toolbar card">
+        <input id="search" placeholder="Search beginner concepts..." />
+        <select id="level">
+          <option value="all">All Levels</option>
+          <option value="beginner" selected>Beginner</option>
+          <option value="intermediate">Intermediate</option>
+          <option value="advanced">Advanced</option>
+        </select>
+        <button id="expandAll">Expand Q&A</button>
+        <button id="collapseAll">Collapse Q&A</button>
+        <button id="theme">Toggle Theme</button>
+      </section>
+
+      <section class="content card" data-level="beginner intermediate">
+        <div class="hero">
+          <h1>Absolute Beginner Foundations</h1>
+          <p>
+            Start here if you are new to enterprise APIs, BBCRM, and distributed systems.
+            This page removes jargon first, then builds technical depth in a guided sequence.
+          </p>
+        </div>
+
+        <section data-level="beginner" id="big-picture">
+          <h2>1) Big Picture in Plain Language</h2>
+          <p>
+            BBCRM is the core fundraising and constituent platform. It is powerful but built on legacy enterprise technology.
+            Modern apps still need to consume it. The Translation Layer acts as a bridge so modern clients can use REST/JSON while
+            BBCRM continues using SOAP/XML internally.
+          </p>
+          <div class="info">
+            Think of this as an adapter plug: modern device on one side, legacy socket on the other.
+          </div>
+        </section>
+
+        <section data-level="beginner" id="core-internet">
+          <h2>2) Internet and API Basics You Must Know</h2>
+          <table>
+            <tr><th>Concept</th><th>Meaning</th><th>Why you care</th></tr>
+            <tr><td>Client</td><td>App making a request</td><td>Could be web app, mobile app, or partner system</td></tr>
+            <tr><td>Server</td><td>App handling request</td><td>Runs business logic and data access</td></tr>
+            <tr><td>Endpoint</td><td>Specific URL + method</td><td>Defines what operation you are calling</td></tr>
+            <tr><td>Payload</td><td>Data in request/response body</td><td>JSON for REST, XML for SOAP</td></tr>
+          </table>
+          <h3>HTTP methods</h3>
+          <ul>
+            <li>GET: read data</li>
+            <li>POST: create data</li>
+            <li>PUT: replace full data</li>
+            <li>PATCH: partially update data</li>
+            <li>DELETE: remove data</li>
+          </ul>
+          <h3>Status codes</h3>
+          <table>
+            <tr><th>Code</th><th>Meaning</th><th>Action</th></tr>
+            <tr><td>200/201</td><td>Success</td><td>Continue flow</td></tr>
+            <tr><td>400</td><td>Bad request</td><td>Fix request payload/validation</td></tr>
+            <tr><td>401</td><td>Unauthenticated</td><td>Acquire or refresh token</td></tr>
+            <tr><td>403</td><td>Forbidden</td><td>User authenticated but no permission</td></tr>
+            <tr><td>404</td><td>Not found</td><td>Validate identifier / route</td></tr>
+            <tr><td>429</td><td>Too many requests</td><td>Back off / retry after window</td></tr>
+            <tr><td>500/503</td><td>Server/downstream failure</td><td>Use retry and observe logs</td></tr>
+          </table>
+        </section>
+
+        <section data-level="beginner intermediate" id="security-basics">
+          <h2>3) Security Basics Without Confusion</h2>
+          <table>
+            <tr><th>Term</th><th>Simple definition</th></tr>
+            <tr><td>Authentication</td><td>Prove who you are (token/SSO login).</td></tr>
+            <tr><td>Authorization</td><td>Check what actions you can do.</td></tr>
+            <tr><td>Identity mapping</td><td>Map SSO identity to BBCRM application user and context.</td></tr>
+          </table>
+          <div class="warning">
+            Common gotcha: SSO success does not guarantee BBCRM access if application-user mapping is missing.
+          </div>
+        </section>
+
+        <section data-level="beginner intermediate" id="request-flow">
+          <h2>4) End-to-End Request Journey (Beginner View)</h2>
+<pre>Client -> API Management Gateway -> Translation Layer
+       -> Legacy BBCRM AppFx Web Service -> Infinity Runtime -> SQL Stored Procedure
+       -> Response returns back through same chain</pre>
+          <ul>
+            <li>Gateway handles token validation, rate limiting, routing.</li>
+            <li>Translation layer maps JSON fields into SOAP form structure.</li>
+            <li>Legacy layer executes business rules and stored procedures.</li>
+            <li>Response is normalized to client-friendly JSON.</li>
+          </ul>
+        </section>
+
+        <section data-level="beginner" id="learning-plan">
+          <h2>5) 4-Week Beginner Learning Plan</h2>
+          <table>
+            <tr><th>Week</th><th>Primary objective</th><th>Checklist</th></tr>
+            <tr><td>1</td><td>HTTP + REST fundamentals</td><td>Methods, status codes, JSON payloads, auth headers</td></tr>
+            <tr><td>2</td><td>BBCRM domain understanding</td><td>Constituent, donation, membership, campaign lifecycle</td></tr>
+            <tr><td>3</td><td>Translation layer internals</td><td>Mapping, operation config, PATCH merge approach</td></tr>
+            <tr><td>4</td><td>Microservices and reliability</td><td>Saga, outbox, idempotency, logs, metrics, traces</td></tr>
+          </table>
+        </section>
+
+        <section data-level="beginner intermediate" id="labs">
+          <h2>6) Practical Labs for New Joiners</h2>
+          <h3>Lab A - Diagnose an API failure</h3>
+          <ol>
+            <li>Capture status code and response error body.</li>
+            <li>Find correlation ID from response headers/log context.</li>
+            <li>Trace each layer in order: gateway -> translation -> downstream.</li>
+            <li>Determine if issue is auth, mapping, permission, or legacy rule failure.</li>
+          </ol>
+          <h3>Lab B - Explain architecture to non-technical stakeholder</h3>
+          <ul>
+            <li>Use business outcome language (speed, risk, compatibility).</li>
+            <li>Avoid protocol jargon until asked.</li>
+            <li>Use one analogy and one metric-based benefit.</li>
+          </ul>
+        </section>
+
+        <section data-level="beginner intermediate" id="beginner-qa">
+          <h2>7) Beginner Q&A</h2>
+          <details>
+            <summary>Why do we still use legacy internals if modern APIs exist?</summary>
+            <p>Because legacy internals contain proven business logic. The translation layer modernizes access without high-risk rewrite.</p>
+          </details>
+          <details>
+            <summary>What is the fastest way to become useful in this team?</summary>
+            <p>Master request tracing with correlation ID, understand domain vocabulary, and learn endpoint-to-operation mapping.</p>
+          </details>
+          <details>
+            <summary>What should I memorize first?</summary>
+            <p>HTTP methods, status codes, authentication vs authorization, and the 5-layer request flow.</p>
+          </details>
+        </section>
+
+        <section data-level="beginner intermediate" id="live-learn-path">
+          <h2>7b) Live Microsoft Learn Path for Beginners</h2>
+          <ol>
+            <li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/azure/api-management/api-management-policies">API Management policies</a> - Start with rate-limit, validate-jwt, and set-backend-service.</li>
+            <li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/aspnet/core/grpc/?view=aspnetcore-10.0">gRPC on .NET overview</a> - Understand where gRPC fits vs REST.</li>
+            <li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/azure/architecture/patterns/circuit-breaker">Circuit Breaker pattern</a> - Learn fail-fast and recovery logic.</li>
+            <li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/azure/architecture/patterns/compensating-transaction">Compensating Transaction pattern</a> - Learn rollback alternatives for distributed systems.</li>
+            <li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/azure/architecture/patterns/strangler-fig">Strangler Fig pattern</a> - Learn low-risk modernization sequencing.</li>
+          </ol>
+          <div class="info">
+            Recommended learning order: APIM basics -> request/response transformation -> resilience patterns -> modernization strategy.
+          </div>
+        </section>
+
+        <section data-level="beginner intermediate" id="tracker">
+          <h2>8) Personal Progress Tracker</h2>
+          <ul class="checklist">
+            <li><label><input data-track="found-http" type="checkbox" /> I can explain all main HTTP methods from memory.</label></li>
+            <li><label><input data-track="found-status" type="checkbox" /> I can interpret 4xx vs 5xx errors correctly.</label></li>
+            <li><label><input data-track="found-flow" type="checkbox" /> I can trace one request across gateway, translation, and legacy layers.</label></li>
+            <li><label><input data-track="found-security" type="checkbox" /> I understand auth, identity mapping, and authorization differences.</label></li>
+            <li><label><input data-track="found-labs" type="checkbox" /> I completed Lab A and Lab B exercises.</label></li>
+          </ul>
+        </section>
+
+        <div class="footer">Beginner Foundations - Wildcards Wiki curriculum expansion module</div>
+      </section>
+    </main>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
