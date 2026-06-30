@@ -300,6 +300,16 @@ a.external-link:hover::after {
   opacity: 1;
 }
 
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Anchor offset for sticky sidebar (adjust scroll position) */
+main section[id] {
+  scroll-margin-top: 100px;
+}
+
 @media (max-width: 1050px) {
   .shell {
     grid-template-columns: 1fr;
