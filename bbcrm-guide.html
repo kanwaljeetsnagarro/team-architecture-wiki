@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BBCRM & SKY API Platform - Team Knowledge Guide</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar card">
+      <div class="brand">Living Architecture Wiki</div>
+      <div class="sub">BBCRM & SKY API Platform Guide</div>
+      <div class="menu">
+        <a href="index.html">Home</a>
+        <a href="foundations.html">Beginner Foundations</a>
+        <a class="active" href="bbcrm-guide.html">BBCRM & SKY Guide</a>
+        <a href="microservices-guide.html">Microservices Guide</a>
+        <a href="system-design-guide.html">System Design Guide</a>
+        <a href="source-compendium.html">Source Compendium (Verbatim)</a>
+      </div>
+      <hr style="border:0;border-top:1px solid var(--border); margin: 12px 0;" />
+      <nav id="toc" class="menu"></nav>
+    </aside>
+
+    <main class="main">
+      <section class="toolbar card">
+        <input id="search" placeholder="Search BBCRM, Infinity, security, CI/CD..." />
+        <select id="level">
+          <option value="all">All Levels</option>
+          <option value="beginner">Beginner</option>
+          <option value="intermediate">Intermediate</option>
+          <option value="advanced">Advanced</option>
+        </select>
+        <button id="expandAll">Expand Q&A</button>
+        <button id="collapseAll">Collapse Q&A</button>
+        <button id="theme">Toggle Theme</button>
+      </section>
+
+      <section class="content card" data-level="beginner intermediate advanced">
+        <div class="hero">
+          <h1>BBCRM & SKY API Platform Team Knowledge Guide</h1>
+          <p>Architecture, technical foundations, security, CI/CD, design patterns, and interview Q&A.</p>
+        </div>
+
+        <section data-level="beginner" id="s1-functional">
+          <h2>Section 1 - BBCRM Functional Overview</h2>
+          <p>
+            Blackbaud CRM (BBCRM) is an enterprise CRM platform for mission-driven organizations including non-profits,
+            universities, hospitals, museums, and foundations. It supports donor lifecycle management, campaigns, events,
+            memberships, and financial integration.
+          </p>
+          <table>
+            <tr><th>Business Domain</th><th>What it manages</th></tr>
+            <tr><td>Constituent Management</td><td>Donors, alumni, volunteers, organizations</td></tr>
+            <tr><td>Revenue & Donations</td><td>Gifts, pledges, recurring donations, soft credits, matching gifts</td></tr>
+            <tr><td>Membership</td><td>Tiers, renewals, expiry, benefits tracking</td></tr>
+            <tr><td>Events</td><td>Registration, attendance, event revenue</td></tr>
+            <tr><td>Campaigns</td><td>Fundraising campaigns and attribution</td></tr>
+            <tr><td>Batch Processing</td><td>Bulk import and transaction processing</td></tr>
+            <tr><td>Finance Integration</td><td>General ledger, revenue recognition, reconciliation</td></tr>
+            <tr><td>Reporting & Analytics</td><td>Ad-hoc queries, KPI dashboards, executive reporting</td></tr>
+          </table>
+
+          <h3>Deployment model</h3>
+          <table>
+            <tr><th>Characteristic</th><th>Detail</th></tr>
+            <tr><td>Dedicated environments</td><td>Each customer has isolated DB, app server, and config</td></tr>
+            <tr><td>Release model</td><td>Quarterly service packs; customers choose upgrade timing</td></tr>
+            <tr><td>Customization</td><td>Custom fields, specs, and logic per customer</td></tr>
+            <tr><td>Isolation</td><td>One customer's issue does not impact another</td></tr>
+          </table>
+
+          <details>
+            <summary>Functional Q&A</summary>
+            <p><strong>What organizations use BBCRM?</strong> Non-profits, universities, hospitals, foundations, and cultural institutions focused on fundraising and constituent engagement.</p>
+            <p><strong>Constituent vs Donor?</strong> Constituent is any entity in system. Donor is a constituent who has given financially.</p>
+            <p><strong>What is a Service Pack?</strong> Quarterly packaged release with features and fixes, deployed on customer schedule.</p>
+          </details>
+        </section>
+
+        <section data-level="intermediate advanced" id="s2-infinity">
+          <h2>Section 2 - Infinity Framework Technical Core</h2>
+          <table>
+            <tr><th>Characteristic</th><th>Meaning</th></tr>
+            <tr><td>Metadata-driven</td><td>Behavior defined via XML specs in DB, not only app code</td></tr>
+            <tr><td>Modular monolith</td><td>Single deployable runtime with domain modules</td></tr>
+            <tr><td>SOAP/XML communication</td><td>Internal service protocol</td></tr>
+            <tr><td>SQL Server + stored procedures</td><td>Data and business operations through USP_ procedures</td></tr>
+          </table>
+
+          <h3>XML specification types</h3>
+          <table>
+            <tr><th>Spec Type</th><th>Purpose</th></tr>
+            <tr><td>Add/Edit Data Forms</td><td>Create and update behavior with validation/defaults</td></tr>
+            <tr><td>Search Lists / Data Lists</td><td>Search/filter and grid views</td></tr>
+            <tr><td>Business Processes</td><td>Workflow definitions and dependencies</td></tr>
+            <tr><td>Batch Definitions</td><td>Bulk import/processing</td></tr>
+            <tr><td>Reports & Queries</td><td>Report and retrieval structures</td></tr>
+          </table>
+
+<pre>User action (UI)
+ -> UI handler
+ -> AppFx framework (loads metadata, validates security)
+ -> BizOps layer
+ -> AppFx web service (SOAP)
+ -> Infinity runtime reads XML spec
+ -> Stored procedure executes in SQL
+ -> Response returns to UI</pre>
+
+          <details>
+            <summary>Technical Q&A</summary>
+            <p><strong>Metadata-driven architecture?</strong> Engine behavior is driven by XML specs at runtime. You can add forms and workflows via configuration metadata.</p>
+            <p><strong>Why stored procedures?</strong> Historical enterprise design choice for transaction control and DB optimization; trade-off is split logic and migration complexity.</p>
+            <p><strong>What is BizOps?</strong> Typed business service layer on top of Infinity for operations like constituent creation and donation processing.</p>
+          </details>
+        </section>
+
+        <section data-level="intermediate advanced" id="s3-translation">
+          <h2>Section 3 - SKY API Translation Layer</h2>
+          <h3>Why this layer exists</h3>
+          <table>
+            <tr><th>Without Translation Layer</th><th>With Translation Layer</th></tr>
+            <tr><td>External clients must speak SOAP/XML</td><td>Clients use REST/JSON</td></tr>
+            <tr><td>No modern auth flow</td><td>OAuth 2.0 via API Management</td></tr>
+            <tr><td>No OpenAPI docs</td><td>Published OpenAPI definitions</td></tr>
+            <tr><td>Tight coupling to legacy internals</td><td>Consumer decoupling from Infinity internals</td></tr>
+            <tr><td>No cloud-native deployment</td><td>Containerized Kubernetes deployment</td></tr>
+            <tr><td>No API versioning support</td><td>Versioning via API Management</td></tr>
+          </table>
+
+          <h3>Architectural role patterns</h3>
+          <ul>
+            <li><strong>Anti-Corruption Layer:</strong> shields REST model from SOAP/legacy model.</li>
+            <li><strong>Strangler Fig:</strong> adds modern capabilities around legacy core incrementally.</li>
+          </ul>
+
+<pre>External Client
+ -> API Management (auth, rate limit, routing, docs)
+ -> Translation Layer
+    -> resolve environment
+    -> load operation configuration
+    -> select strategy
+    -> build SOAP payload
+    -> call BBCRM service
+    -> transform SOAP response to JSON
+ -> Client receives JSON response</pre>
+
+          <h3>Key design patterns in translation layer</h3>
+          <table>
+            <tr><th>Pattern</th><th>Where applied</th><th>Why</th></tr>
+            <tr><td>Facade</td><td>Translation service entry</td><td>Simplifies orchestration surface</td></tr>
+            <tr><td>Strategy</td><td>Translation engine</td><td>Different mapping logic per operation type</td></tr>
+            <tr><td>Adapter</td><td>SOAP access wrapper</td><td>Internal code remains protocol-agnostic</td></tr>
+            <tr><td>Builder</td><td>Request builders</td><td>Construct complex SOAP envelopes safely</td></tr>
+            <tr><td>Cache-Aside</td><td>Metadata/config cache</td><td>Reduce repeated remote lookups</td></tr>
+          </table>
+
+          <table>
+            <tr><th>Translation layer owns</th><th>Does not own</th></tr>
+            <tr><td>Protocol translation, mapping, response shaping, orchestration</td><td>Business logic, direct data ownership, gateway ownership, auth infrastructure ownership</td></tr>
+          </table>
+
+          <details>
+            <summary>Translation Layer Q&A</summary>
+            <p><strong>One-sentence definition:</strong> Cloud-native bridge converting REST/JSON requests into SOAP/XML calls and responses.</p>
+            <p><strong>Is it a microservice?</strong> Deployed like one, but it is an integration service rather than business-domain owner.</p>
+            <p><strong>How does operation routing work?</strong> endpoint -> operation_id -> configuration lookup -> mapping and transformation rules.</p>
+            <p><strong>How does PATCH edit work?</strong> GET existing record, merge incoming partial fields, submit complete form expected by legacy model.</p>
+          </details>
+        </section>
+
+        <section data-level="intermediate advanced" id="s4-security">
+          <h2>Section 4 - Security Architecture</h2>
+<pre>Layer 1: Authentication (SSO - who are you?)
+Layer 2: Identity Mapping (registered in BBCRM? resolve customer context)
+Layer 3: Authorization (roles, permissions, row-level checks in Infinity)</pre>
+
+          <table>
+            <tr><th>Component</th><th>Responsibility</th></tr>
+            <tr><td>Enterprise SSO</td><td>Cross-product login, MFA, federated identity</td></tr>
+            <tr><td>Application User record</td><td>User must exist in BBCRM, separate from SSO success</td></tr>
+            <tr><td>Identity claim mapping</td><td>Map NameIdentifier claim to BBCRM app user</td></tr>
+            <tr><td>Customer context resolution</td><td>Organization + environment + product context</td></tr>
+            <tr><td>API Management</td><td>Token checks, policies, throttling</td></tr>
+            <tr><td>Final authorization</td><td>Legacy platform validates feature and row access</td></tr>
+          </table>
+
+          <table>
+            <tr><th>Communication layer</th><th>Security</th></tr>
+            <tr><td>Client -> Gateway</td><td>HTTPS only</td></tr>
+            <tr><td>Gateway -> Translation layer</td><td>HTTPS internal routing</td></tr>
+            <tr><td>Service-to-service in cluster</td><td>mTLS via service mesh</td></tr>
+            <tr><td>Translation -> BBCRM</td><td>HTTPS SOAP call</td></tr>
+            <tr><td>Secrets and credentials</td><td>Secret manager, never source code/config files</td></tr>
+          </table>
+
+          <details>
+            <summary>Security Q&A</summary>
+            <p><strong>Authentication vs authorization?</strong> Authentication verifies identity; authorization checks permission scope after identity is confirmed.</p>
+            <p><strong>Common BBCRM gotcha?</strong> SSO login may pass, but BBCRM access still fails if app-user record/mapping is missing.</p>
+            <p><strong>Why mTLS?</strong> Both client and server authenticate each other, reducing impersonation risk in internal network traffic.</p>
+          </details>
+        </section>
+
+        <section data-level="intermediate advanced" id="s5-cicd">
+          <h2>Section 5 - CI/CD and Deployment</h2>
+          <table>
+            <tr><th>Aspect</th><th>BBCRM</th><th>Translation Layer</th></tr>
+            <tr><td>Pipeline model</td><td>Classic UI-based</td><td>YAML modern pipeline</td></tr>
+            <tr><td>Source control</td><td>TFVC</td><td>Git</td></tr>
+            <tr><td>Build tool</td><td>MSBuild (.NET Framework)</td><td>dotnet build (.NET Core)</td></tr>
+            <tr><td>Trigger</td><td>Manual quarterly</td><td>Automatic on commit</td></tr>
+            <tr><td>Target</td><td>IIS on Windows servers</td><td>Kubernetes containers</td></tr>
+            <tr><td>Rollback</td><td>Re-run prior release</td><td>Traffic shift rollback</td></tr>
+          </table>
+
+          <h3>BBCRM release stages</h3>
+          <ol>
+            <li>File drop (artifacts + XML specs)</li>
+            <li>Database setup (restore, encryption, migrations)</li>
+            <li>IIS setup (app pools, sites, bindings)</li>
+            <li>Web API workflow (SOAP endpoints + validation)</li>
+          </ol>
+
+          <h3>Translation layer build and release sequence</h3>
+          <ul>
+            <li>Build: restore, compile, test, coverage, Docker image, push image, publish OpenAPI/artifacts</li>
+            <li>Release zones: test -> US -> Canada -> Europe -> Australia -> post-deploy APIM update</li>
+          </ul>
+
+          <h3>Canary rollout model</h3>
+<pre>Deploy new version beside current
+Start at 0% traffic
+Health checks pass
+Shift traffic: 10% -> 25% -> 50% -> 100%
+If any issue: instantly remove new version and keep old traffic</pre>
+
+          <details>
+            <summary>CI/CD Q&A</summary>
+            <p><strong>Main model difference?</strong> BBCRM is classic infra-owned quarterly release; translation layer is modern engineering-owned frequent delivery.</p>
+            <p><strong>Why canary?</strong> Limits blast radius and enables fast rollback with minimal user impact.</p>
+            <p><strong>Why multi-stage Docker build?</strong> Smaller and safer runtime image by separating build and runtime dependencies.</p>
+          </details>
+        </section>
+
+        <section data-level="advanced" id="s6-architecture">
+          <h2>Section 6 - Architecture Patterns and Design Decisions</h2>
+          <h3>Why not rewrite BBCRM fully into microservices?</h3>
+          <table>
+            <tr><th>Obstacle</th><th>Impact</th></tr>
+            <tr><td>Shared database + cross-domain stored procedures</td><td>Hard to decompose into true database-per-service boundaries</td></tr>
+            <tr><td>Deeply coupled ACID operations</td><td>Would require sagas and compensations across many domains</td></tr>
+            <tr><td>Metadata runtime coupling</td><td>No clean decomposition seams without large runtime re-platform</td></tr>
+            <tr><td>High customer customization volume</td><td>Migration complexity multiplies across installations</td></tr>
+          </table>
+          <table>
+            <tr><th>Can extract</th><th>Cannot easily extract</th></tr>
+            <tr><td>Notifications, reporting, document generation, integration adapters</td><td>Constituent core, gift processing, cross-domain security, broad batch operations</td></tr>
+          </table>
+          <div class="success">
+            Strategic answer: modernize at integration boundaries using Strangler Fig and Anti-Corruption Layer; keep proven business engine stable.
+          </div>
+          <h3>Patterns actively used</h3>
+          <ul>
+            <li>Anti-Corruption Layer</li>
+            <li>Strangler Fig</li>
+            <li>Config-driven behavior</li>
+            <li>Cache-Aside</li>
+            <li>Canary deployment</li>
+            <li>Correlation ID tracing</li>
+          </ul>
+          <details>
+            <summary>Architecture Q&A</summary>
+            <p><strong>What is Anti-Corruption Layer?</strong> Translator boundary that prevents legacy model leakage into modern service contracts.</p>
+            <p><strong>What is Strangler Fig?</strong> Incremental modernization approach that grows new capabilities around legacy core.</p>
+            <p><strong>Why correlation ID?</strong> Enables full end-to-end trace lookup for one request across all services and logs.</p>
+          </details>
+        </section>
+
+        <section data-level="intermediate advanced" id="s7-interview">
+          <h2>Section 7 - General Interview Q&A</h2>
+          <details>
+            <summary>How does request flow end-to-end?</summary>
+            <p>Client -> APIM -> Translation (context + config + mapping) -> BBCRM AppFx -> Infinity + DB -> translated JSON response with correlation trace.</p>
+          </details>
+          <details>
+            <summary>Synchronous vs asynchronous communication?</summary>
+            <p>Synchronous waits for immediate response; asynchronous publishes work and continues. APIs often sync; notifications/analytics often async.</p>
+          </details>
+          <details>
+            <summary>Horizontal vs vertical scaling?</summary>
+            <p>Vertical adds resources to one node; horizontal adds instances. Translation layer scales horizontally due to stateless design.</p>
+          </details>
+          <details>
+            <summary>Dependency injection value?</summary>
+            <p>Externalizes dependencies, improves testability, and supports implementation swapping with minimal code change.</p>
+          </details>
+          <details>
+            <summary>How to debug distributed production issues?</summary>
+            <p>Start with correlation ID and inspect layers systematically: auth, context resolution, translation, downstream business operation.</p>
+          </details>
+          <details>
+            <summary>How to add a new API endpoint?</summary>
+            <p>Design consumer contract, map operation configuration, implement endpoint, test translation logic and end-to-end behavior.</p>
+          </details>
+          <details>
+            <summary>How to handle SQL performance issues?</summary>
+            <p>Determine customer-specific vs systemic issue; use actual execution plans; apply targeted index/query or broader product-safe fixes.</p>
+          </details>
+          <details>
+            <summary>How to explain complex architecture to non-technical stakeholders?</summary>
+            <p>Use business impact language, analogies, and explicit risk/cost/time outcomes.</p>
+          </details>
+          <details>
+            <summary>How to approach technical debt?</summary>
+            <p>Classify active vs stable debt, prioritize based on impact, and document decisions and rationale transparently.</p>
+          </details>
+          <details>
+            <summary>How to ensure team knowledge sharing?</summary>
+            <p>Document why-not-just-what, create layered onboarding material, use code reviews as teaching, and pair engineers on complex areas.</p>
+          </details>
+        </section>
+
+        <section data-level="beginner intermediate advanced" id="quick-reference">
+          <h2>Quick Reference - Key Terms</h2>
+          <table>
+            <tr><th>Term</th><th>Definition</th></tr>
+            <tr><td>BBCRM</td><td>Enterprise CRM platform for mission-driven organizations</td></tr>
+            <tr><td>Infinity Framework</td><td>Metadata-driven runtime powering BBCRM operations</td></tr>
+            <tr><td>XML Specification</td><td>Descriptor defining operation behavior</td></tr>
+            <tr><td>AppFx</td><td>Framework layer loading metadata and enforcing context/security</td></tr>
+            <tr><td>BizOps</td><td>Typed business operations service layer</td></tr>
+            <tr><td>AppFx Web Service</td><td>Legacy SOAP endpoint</td></tr>
+            <tr><td>Stored Procedure</td><td>SQL business logic procedure (USP_ prefix)</td></tr>
+            <tr><td>Service Pack</td><td>Quarterly BBCRM release package</td></tr>
+            <tr><td>Translation Layer</td><td>REST-SOAP bridge and integration orchestration service</td></tr>
+            <tr><td>Anti-Corruption Layer</td><td>Model translation boundary between systems</td></tr>
+            <tr><td>Strangler Fig</td><td>Incremental modernization pattern</td></tr>
+            <tr><td>operation_id</td><td>Endpoint-to-operation configuration key</td></tr>
+            <tr><td>API Management</td><td>Gateway for auth, policy, routing, and docs</td></tr>
+            <tr><td>SSO</td><td>Single sign-on identity flow</td></tr>
+            <tr><td>Canary Deployment</td><td>Progressive traffic shift rollout with rollback</td></tr>
+            <tr><td>Correlation ID</td><td>Unique request identifier across all logs</td></tr>
+            <tr><td>mTLS</td><td>Mutual certificate authentication for service traffic</td></tr>
+            <tr><td>Kubernetes (AKS)</td><td>Container orchestration platform</td></tr>
+            <tr><td>Service Mesh</td><td>Infrastructure layer for mTLS, traffic controls, observability</td></tr>
+            <tr><td>Config-Driven</td><td>Behavior defined in config rather than source code</td></tr>
+            <tr><td>Cache-Aside</td><td>Read cache first, fallback source, then populate cache</td></tr>
+            <tr><td>Horizontal Scaling</td><td>Add more instances to serve load</td></tr>
+            <tr><td>SOAP/XML</td><td>Legacy structured protocol format</td></tr>
+            <tr><td>REST/JSON</td><td>Modern API style and payload format</td></tr>
+          </table>
+        </section>
+
+        <section data-level="intermediate advanced" id="bbcrm-live-learn">
+          <h2>Live Microsoft Learn Extensions</h2>
+          <table>
+            <tr><th>Concept</th><th>Live resource</th><th>Learner value</th></tr>
+            <tr><td>Incremental modernization</td><td><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/azure/architecture/patterns/strangler-fig">Strangler Fig pattern</a></td><td>Shows phased migration with facade routing.</td></tr>
+            <tr><td>Downstream failure protection</td><td><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/azure/architecture/patterns/circuit-breaker">Circuit Breaker pattern</a></td><td>Operational resilience state model.</td></tr>
+            <tr><td>Undoing distributed operations</td><td><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/azure/architecture/patterns/compensating-transaction">Compensating Transaction</a></td><td>Business-safe compensation design guidance.</td></tr>
+            <tr><td>Gateway policy capabilities</td><td><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/azure/api-management/api-management-policies">APIM policy reference</a></td><td>Practical security, rate limit, transformation controls.</td></tr>
+          </table>
+        </section>
+
+        <div class="footer">BBCRM & SKY API Platform Team Knowledge Guide - June 2026</div>
+      </section>
+    </main>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

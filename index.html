@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Living Architecture Wiki - Home</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar card">
+      <div class="brand">Living Architecture Wiki</div>
+      <div class="sub">BBCRM + SKY API + Microservices + System Design</div>
+      <div class="menu">
+        <a class="active" href="index.html">Home</a>
+        <a href="foundations.html">Beginner Foundations</a>
+        <a href="bbcrm-guide.html">BBCRM & SKY Guide</a>
+        <a href="microservices-guide.html">Microservices Guide</a>
+        <a href="system-design-guide.html">System Design Guide</a>
+        <a href="source-compendium.html">Source Compendium (Verbatim)</a>
+      </div>
+      <hr style="border:0;border-top:1px solid var(--border); margin: 12px 0;" />
+      <nav id="toc" class="menu"></nav>
+    </aside>
+
+    <main class="main">
+      <section class="toolbar card">
+        <input id="search" placeholder="Search this page..." />
+        <select id="level">
+          <option value="all">All Levels</option>
+          <option value="beginner">Beginner</option>
+          <option value="intermediate">Intermediate</option>
+          <option value="advanced">Advanced</option>
+        </select>
+        <button id="expandAll">Expand Q&A</button>
+        <button id="collapseAll">Collapse Q&A</button>
+        <button id="theme">Toggle Theme</button>
+      </section>
+
+      <section class="content card" data-level="beginner intermediate advanced">
+        <div class="hero">
+          <h1>Production-Ready Living Website</h1>
+          <p>
+            This version is expanded into a multi-page learning system and includes the full knowledge from the uploaded BBCRM,
+            Microservices, and System Design guides. It is structured from absolute beginner to architect-level depth.
+          </p>
+        </div>
+
+        <section data-level="beginner intermediate advanced">
+          <h2>How to Use This Website</h2>
+          <ol>
+            <li><strong>New joiners:</strong> start with <a href="foundations.html">Beginner Foundations</a>.</li>
+            <li><strong>Product/platform context:</strong> read <a href="bbcrm-guide.html">BBCRM & SKY Guide</a>.</li>
+            <li><strong>Architecture skills:</strong> complete <a href="microservices-guide.html">Microservices Guide</a>.</li>
+            <li><strong>Interview prep:</strong> finish <a href="system-design-guide.html">System Design Guide</a>.</li>
+          </ol>
+          <div class="info">
+            <strong>Living behavior:</strong> checklists, Q&A drill-downs, search, and level filtering are interactive and persist locally.
+          </div>
+        </section>
+
+        <section data-level="beginner">
+          <h2>Curriculum Expansion Added</h2>
+          <ul>
+            <li>Absolute beginner vocabulary and internet/API fundamentals.</li>
+            <li>Role-based learning tracks for Front-End, Back-End, and Architect growth.</li>
+            <li>Hands-on lab sequences for request tracing, endpoint design, and failure analysis.</li>
+            <li>Decision playbooks for choosing patterns under constraints.</li>
+          </ul>
+        </section>
+
+        <section data-level="intermediate advanced">
+          <h2>What Is Covered End-to-End</h2>
+          <table>
+            <tr><th>Area</th><th>Coverage in this website</th></tr>
+            <tr><td>BBCRM functional and deployment model</td><td>Domains, dedicated customer environments, service packs, interview Q&A</td></tr>
+            <tr><td>Infinity technical core</td><td>Metadata-driven XML specs, AppFx/BizOps flow, stored procedure model</td></tr>
+            <tr><td>SKY translation architecture</td><td>Anti-Corruption Layer, Strangler pattern, ownership boundaries, PATCH semantics</td></tr>
+            <tr><td>Security</td><td>Authentication, identity mapping, authorization, mTLS and secret management</td></tr>
+            <tr><td>CI/CD</td><td>Classic BBCRM release model vs modern containerized canary model</td></tr>
+            <tr><td>Microservices fundamentals and advanced patterns</td><td>Communication, data, resilience, observability, additions and analogies</td></tr>
+            <tr><td>System design interview framework</td><td>7-step method, core blocks, five solved problems, trade-off communication</td></tr>
+          </table>
+        </section>
+
+        <section data-level="beginner intermediate advanced">
+          <h2>Learning Progress Tracker</h2>
+          <ul class="checklist">
+            <li><label><input data-track="home-foundations" type="checkbox" /> I completed Beginner Foundations page.</label></li>
+            <li><label><input data-track="home-bbcrm" type="checkbox" /> I completed BBCRM & SKY Guide page.</label></li>
+            <li><label><input data-track="home-microservices" type="checkbox" /> I completed Microservices Guide page.</label></li>
+            <li><label><input data-track="home-system-design" type="checkbox" /> I completed System Design Guide page.</label></li>
+            <li><label><input data-track="home-review" type="checkbox" /> I reviewed glossary and architecture decision tables.</label></li>
+          </ul>
+        </section>
+
+        <section data-level="intermediate advanced">
+          <h2>Governance and Update Cadence</h2>
+          <ul>
+            <li>Update quarterly after service-pack and platform release changes.</li>
+            <li>Add new interview Q&A after major incident reviews and architecture design reviews.</li>
+            <li>Preserve backward-compatible API notes as dedicated change log entries.</li>
+          </ul>
+          <div class="success">
+            Suggested owners: Platform Architecture + API Team + DevOps + Senior IC rotation.
+          </div>
+        </section>
+
+        <section data-level="beginner intermediate advanced">
+          <h2>Reference Sources Used</h2>
+          <ul>
+            <li>Uploaded BBCRM Team Guide (all sections and glossary).</li>
+            <li>Uploaded Microservices Team Guide with additions and analogies.</li>
+            <li>Uploaded System Design Guide with 7-step framework and 5 worked problems.</li>
+            <li>Supplementary pattern references from Microsoft and industry pattern pages.</li>
+          </ul>
+        </section>
+
+        <section data-level="beginner intermediate advanced">
+          <h2>Live Microsoft Learn Companion (MCP-fed)</h2>
+          <p>These live docs are added for continuous learner updates beyond the uploaded guides.</p>
+          <table>
+            <tr><th>Topic</th><th>Resource</th><th>Why learner should read it</th></tr>
+            <tr><td>Circuit Breaker</td><td><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/azure/architecture/patterns/circuit-breaker">Microsoft Learn</a></td><td>Understand fail-fast states and cascading-failure prevention.</td></tr>
+            <tr><td>Strangler Fig</td><td><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/azure/architecture/patterns/strangler-fig">Microsoft Learn</a></td><td>Stepwise modernization strategy for legacy systems.</td></tr>
+            <tr><td>Compensating Transaction</td><td><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/azure/architecture/patterns/compensating-transaction">Microsoft Learn</a></td><td>Practical compensation design in eventual consistency workflows.</td></tr>
+            <tr><td>gRPC on .NET</td><td><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/aspnet/core/grpc/?view=aspnetcore-10.0">Microsoft Learn</a></td><td>When and how to adopt high-performance internal RPC.</td></tr>
+            <tr><td>API Management Policies</td><td><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/azure/api-management/api-management-policies">Microsoft Learn</a></td><td>Edge policy toolkit for auth, throttling, routing, and transformations.</td></tr>
+            <tr><td>AKS Mission Critical Platform</td><td><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/azure/architecture/reference-architectures/containers/aks-mission-critical/mission-critical-app-platform">Microsoft Learn</a></td><td>Reliability baseline for high-criticality Kubernetes workloads.</td></tr>
+          </table>
+        </section>
+
+        <div class="footer">
+          Living Architecture Wiki - Multi-page edition - June 2026
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

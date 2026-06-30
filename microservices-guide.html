@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Microservices Architecture - Team Knowledge Guide</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar card">
+      <div class="brand">Living Architecture Wiki</div>
+      <div class="sub">Microservices Architecture Guide</div>
+      <div class="menu">
+        <a href="index.html">Home</a>
+        <a href="foundations.html">Beginner Foundations</a>
+        <a href="bbcrm-guide.html">BBCRM & SKY Guide</a>
+        <a class="active" href="microservices-guide.html">Microservices Guide</a>
+        <a href="system-design-guide.html">System Design Guide</a>
+        <a href="source-compendium.html">Source Compendium (Verbatim)</a>
+      </div>
+      <hr style="border:0;border-top:1px solid var(--border); margin: 12px 0;" />
+      <nav id="toc" class="menu"></nav>
+    </aside>
+
+    <main class="main">
+      <section class="toolbar card">
+        <input id="search" placeholder="Search microservices patterns..." />
+        <select id="level">
+          <option value="all">All Levels</option>
+          <option value="beginner">Beginner</option>
+          <option value="intermediate">Intermediate</option>
+          <option value="advanced">Advanced</option>
+        </select>
+        <button id="expandAll">Expand Q&A</button>
+        <button id="collapseAll">Collapse Q&A</button>
+        <button id="theme">Toggle Theme</button>
+      </section>
+
+      <section class="content card" data-level="beginner intermediate advanced">
+        <div class="hero">
+          <h1>Microservices Architecture Team Knowledge Guide</h1>
+          <p>Fundamentals, design process, communication, data patterns, resilience, testing, additions, and interview Q&A.</p>
+        </div>
+
+        <section data-level="beginner" id="m1-what">
+          <h2>Section 1 - What Are Microservices?</h2>
+          <p>
+            Microservices architecture builds an application as a set of small independently deployable services.
+            Each service owns one business capability, process boundary, and usually one data boundary.
+          </p>
+          <table>
+            <tr><th>Architecture</th><th>What it is</th><th>When it fits</th></tr>
+            <tr><td>Monolith</td><td>Single deployable codebase</td><td>Small team, early product, MVP</td></tr>
+            <tr><td>Modular Monolith</td><td>Single deployable with strict module boundaries</td><td>Growing product without distributed overhead</td></tr>
+            <tr><td>Microservices</td><td>Multiple independent deployables and data owners</td><td>Multiple teams and independent scaling needs</td></tr>
+          </table>
+          <div class="warning">
+            A well-designed monolith is better than poorly-operated microservices. Use microservices only when independence needs justify complexity.
+          </div>
+          <h3>6 core principles</h3>
+          <ul>
+            <li>Single responsibility</li>
+            <li>Independent deployability</li>
+            <li>Independent scalability</li>
+            <li>Database per service</li>
+            <li>Loose coupling</li>
+            <li>High cohesion</li>
+          </ul>
+          <details>
+            <summary>Fundamentals Q&A</summary>
+            <p><strong>Are microservices always better?</strong> No. They increase operational complexity and only pay off at certain scale/team structures.</p>
+            <p><strong>How to choose service boundaries?</strong> Start from business bounded contexts using domain language, not technology layers.</p>
+            <p><strong>What is a bounded context?</strong> Domain boundary where a specific model and vocabulary stay consistent.</p>
+          </details>
+        </section>
+
+        <section data-level="intermediate advanced" id="m2-design">
+          <h2>Section 2 - Architecture Design</h2>
+<pre>1. Identify business capabilities
+2. Apply domain-driven design
+3. Discover bounded contexts
+4. Define service boundaries
+5. Choose data storage per service
+6. Define communication patterns
+7. Choose infrastructure</pre>
+          <h3>Database per service</h3>
+          <table>
+            <tr><th>Service</th><th>Typical data</th><th>Best-fit storage</th></tr>
+            <tr><td>Product Catalog</td><td>Flexible attributes</td><td>Document DB</td></tr>
+            <tr><td>Order Processing</td><td>Transactional records</td><td>Relational DB</td></tr>
+            <tr><td>User Sessions</td><td>Ephemeral high-speed state</td><td>In-memory cache</td></tr>
+            <tr><td>Search</td><td>Full text + relevance</td><td>Search engine</td></tr>
+            <tr><td>Audit</td><td>Append-only event history</td><td>Time-series or append store</td></tr>
+          </table>
+          <p>Using different stores by service need is polyglot persistence.</p>
+          <h3>API Gateway pattern</h3>
+          <ul>
+            <li>Single external entry point</li>
+            <li>Auth/token validation</li>
+            <li>Rate limiting and quotas</li>
+            <li>Routing and SSL termination</li>
+            <li>Versioning and API docs</li>
+          </ul>
+          <details>
+            <summary>Architecture design Q&A</summary>
+            <p><strong>BFF pattern?</strong> Separate backend layer per client type (mobile/web/partner), each optimized for that client's needs.</p>
+            <p><strong>Shared functionality across services?</strong> Prefer duplication for small utility logic; shared library for non-domain utilities; shared service only when centralization is justified.</p>
+          </details>
+        </section>
+
+        <section data-level="intermediate advanced" id="m3-communication">
+          <h2>Section 3 - Communication Patterns</h2>
+          <table>
+            <tr><th>Dimension</th><th>Synchronous</th><th>Asynchronous</th></tr>
+            <tr><td>Flow</td><td>Caller waits for response</td><td>Caller publishes and continues</td></tr>
+            <tr><td>Best for</td><td>Immediate result workflows</td><td>Background and decoupled workflows</td></tr>
+            <tr><td>Tech examples</td><td>REST, gRPC</td><td>Message queue, event bus</td></tr>
+            <tr><td>Risk</td><td>Cascading latency/failure chains</td><td>Eventual consistency and duplicate handling</td></tr>
+          </table>
+
+          <h3>REST vs gRPC</h3>
+          <table>
+            <tr><th>Aspect</th><th>REST</th><th>gRPC</th></tr>
+            <tr><td>Protocol</td><td>HTTP/HTTPS</td><td>HTTP/2</td></tr>
+            <tr><td>Format</td><td>JSON</td><td>Protocol Buffers (binary)</td></tr>
+            <tr><td>Best use</td><td>Public and browser/mobile APIs</td><td>Internal high-frequency service calls</td></tr>
+          </table>
+
+<pre>Without messaging:
+Order -> Payment -> Inventory -> Notification (one slow service slows all)
+
+With messaging:
+Order publishes OrderCreated
+Payment subscribes independently
+Inventory subscribes independently
+Notification subscribes independently</pre>
+
+          <h3>Choreography vs orchestration</h3>
+          <table>
+            <tr><th>Pattern</th><th>Description</th><th>Use when</th></tr>
+            <tr><td>Choreography</td><td>No central coordinator, event-driven reactions</td><td>Simple event chains, frequent subscriber additions</td></tr>
+            <tr><td>Orchestration</td><td>Central workflow coordinator</td><td>Complex conditional flows and explicit compensation</td></tr>
+          </table>
+          <details>
+            <summary>Communication Q&A</summary>
+            <p><strong>REST vs queue?</strong> REST for immediate dependency; queue for background decoupled work.</p>
+            <p><strong>Eventual consistency acceptable when?</strong> When slight state delay does not harm user/business guarantees.</p>
+            <p><strong>Idempotency why critical?</strong> Message redelivery happens; handlers must avoid duplicate side effects.</p>
+          </details>
+        </section>
+
+        <section data-level="advanced" id="m4-data">
+          <h2>Section 4 - Data Management Patterns</h2>
+          <p>When transactions span services, single ACID transaction no longer applies.</p>
+<pre>Problem:
+Create order succeeds
+Charge payment fails
+System inconsistent
+
+Saga solution:
+Step1 create order
+Step2 charge payment fails
+Compensate: cancel order</pre>
+          <h3>Saga pattern</h3>
+          <table>
+            <tr><th>Step</th><th>Forward action</th><th>Compensation</th></tr>
+            <tr><td>1</td><td>Create order</td><td>Cancel order</td></tr>
+            <tr><td>2</td><td>Charge customer</td><td>Refund customer</td></tr>
+            <tr><td>3</td><td>Reserve inventory</td><td>Release reservation</td></tr>
+            <tr><td>4</td><td>Generate invoice</td><td>Void invoice</td></tr>
+            <tr><td>5</td><td>Send confirmation</td><td>Best-effort</td></tr>
+          </table>
+          <div class="warning">
+            Compensation is not DB rollback. It is a new business action that reverses prior committed effects.
+          </div>
+
+          <h3>Outbox pattern</h3>
+<pre>In one DB transaction:
+ - Save business record
+ - Save event in outbox table
+Background worker publishes outbox events later
+No dual-write data loss window</pre>
+
+          <h3>CQRS</h3>
+          <table>
+            <tr><th>Side</th><th>Characteristics</th></tr>
+            <tr><td>Command side (write)</td><td>Business rules and consistency focus</td></tr>
+            <tr><td>Query side (read)</td><td>Read-optimized denormalized views</td></tr>
+          </table>
+          <details>
+            <summary>Data management Q&A</summary>
+            <p><strong>Saga use case?</strong> Multi-service business transaction requiring consistency and compensations.</p>
+            <p><strong>Outbox why needed?</strong> Guarantees event persistence with data write in one transaction boundary.</p>
+            <p><strong>Rollback vs compensation?</strong> Rollback undoes uncommitted local changes; compensation is new action after commit.</p>
+          </details>
+        </section>
+
+        <section data-level="intermediate advanced" id="m5-resilience">
+          <h2>Section 5 - Resilience and Reliability</h2>
+          <table>
+            <tr><th>Failure type</th><th>Pattern</th></tr>
+            <tr><td>Transient network blip</td><td>Retry with exponential backoff</td></tr>
+            <tr><td>Slow downstream</td><td>Timeout</td></tr>
+            <tr><td>Sustained failures</td><td>Circuit breaker</td></tr>
+            <tr><td>Resource starvation</td><td>Bulkhead</td></tr>
+            <tr><td>Poison message</td><td>Dead letter queue</td></tr>
+            <tr><td>Pod crash</td><td>Liveness probe restart</td></tr>
+            <tr><td>Not ready yet</td><td>Readiness probe remove from LB</td></tr>
+            <tr><td>Traffic spikes</td><td>Horizontal autoscaling</td></tr>
+            <tr><td>Expensive repeated lookups</td><td>Cache-Aside</td></tr>
+          </table>
+<pre>Circuit states:
+Closed -> normal operation
+Open -> fail-fast, no downstream calls
+Half-open -> trial request for recovery test</pre>
+          <h3>Retry best practices</h3>
+          <ul>
+            <li>Exponential backoff + jitter</li>
+            <li>Max retry cap</li>
+            <li>Retry only transient errors</li>
+            <li>Retry only idempotent operations</li>
+          </ul>
+          <details>
+            <summary>Resilience Q&A</summary>
+            <p><strong>Retry vs circuit breaker?</strong> Retry handles transient blips; circuit breaker handles sustained unhealthy downstream behavior.</p>
+            <p><strong>DLQ handling?</strong> Move failed messages aside after max retries, investigate root cause, then replay safely.</p>
+            <p><strong>Zero downtime deployment?</strong> Rolling/canary deploys + readiness checks + backward-compatible contracts + feature flags.</p>
+          </details>
+        </section>
+
+        <section data-level="intermediate advanced" id="m6-testing">
+          <h2>Section 6 - Testing and Observability</h2>
+          <table>
+            <tr><th>Test type</th><th>What it tests</th><th>Best used for</th></tr>
+            <tr><td>Unit</td><td>Isolated logic</td><td>Validation, transformations, edge cases</td></tr>
+            <tr><td>Integration</td><td>Service + real DB/queue</td><td>Data access and config startup checks</td></tr>
+            <tr><td>Contract</td><td>Consumer-provider API agreement</td><td>Breaking change detection early</td></tr>
+            <tr><td>End-to-end</td><td>Full workflow across real services</td><td>Critical smoke flows only</td></tr>
+          </table>
+          <h3>Three observability pillars</h3>
+          <ul>
+            <li><strong>Logs:</strong> what happened</li>
+            <li><strong>Metrics:</strong> how healthy system is over time</li>
+            <li><strong>Traces:</strong> where request went across services</li>
+          </ul>
+<pre>{
+  "timestamp":"2026-06-28T14:32:15Z",
+  "level":"INFO",
+  "message":"Order placed successfully",
+  "orderId":"ABC",
+  "correlationId":"req-xyz-789",
+  "service":"order-service",
+  "durationMs":145
+}</pre>
+          <details>
+            <summary>Testing and observability Q&A</summary>
+            <p><strong>How to test without deploying everything?</strong> Layered strategy: many unit tests, fewer integration tests, targeted contract tests, minimal E2E.</p>
+            <p><strong>Why structured logging?</strong> Machine-queryable fields enable fast distributed debugging with correlation IDs.</p>
+            <p><strong>Must-have metrics?</strong> request rate, error rate, p50/p95/p99 latency, resource metrics, business metrics, and dependency metrics.</p>
+          </details>
+        </section>
+
+        <section data-level="advanced" id="m7-interview">
+          <h2>Section 7 - General Interview Q&A and Decision Guides</h2>
+          <details>
+            <summary>How to handle breaking API changes?</summary>
+            <p>Version APIs, keep old version running, deprecate clearly, and preserve backward compatibility discipline.</p>
+          </details>
+          <details>
+            <summary>Service discovery why needed?</summary>
+            <p>In dynamic environments addresses change; service discovery provides stable lookup names (e.g., Kubernetes DNS).</p>
+          </details>
+          <details>
+            <summary>Security model in microservices?</summary>
+            <p>Edge auth at gateway, mTLS internally, least-privilege access, and secret store for credentials.</p>
+          </details>
+          <details>
+            <summary>Migration challenges from monolith?</summary>
+            <p>Operational complexity, distributed failure modes, consistency management, testing complexity, and team ownership shifts.</p>
+          </details>
+
+          <h3>Quick decision guides</h3>
+          <table>
+            <tr><th>Situation</th><th>Recommendation</th></tr>
+            <tr><td>Small team, simple domain</td><td>Monolith</td></tr>
+            <tr><td>Growing structure needs</td><td>Modular monolith</td></tr>
+            <tr><td>Multiple teams with independent release pressure</td><td>Microservices</td></tr>
+          </table>
+          <table>
+            <tr><th>Communication need</th><th>Pattern</th></tr>
+            <tr><td>Immediate result needed</td><td>Synchronous REST/gRPC</td></tr>
+            <tr><td>Background workflow</td><td>Async queue/event bus</td></tr>
+            <tr><td>Complex compensation flow</td><td>Orchestration saga</td></tr>
+            <tr><td>Simple reactive chain</td><td>Choreography saga</td></tr>
+          </table>
+          <table>
+            <tr><th>Data challenge</th><th>Pattern</th></tr>
+            <tr><td>Cross-service transaction</td><td>Saga</td></tr>
+            <tr><td>DB write + event publish</td><td>Outbox</td></tr>
+            <tr><td>Duplicate message delivery</td><td>Idempotent consumer</td></tr>
+            <tr><td>Read-heavy workloads</td><td>CQRS</td></tr>
+          </table>
+        </section>
+
+        <section data-level="intermediate advanced" id="addition-a">
+          <h2>Addition A - Types of Microservices</h2>
+          <table>
+            <tr><th>Type</th><th>What it does</th><th>Typical use case</th></tr>
+            <tr><td>Domain service</td><td>Owns one business domain end-to-end</td><td>Order, payment, user, inventory</td></tr>
+            <tr><td>Aggregator</td><td>Combines responses from many services</td><td>Dashboards and summary views</td></tr>
+            <tr><td>Proxy</td><td>Pass-through with cross-cutting behavior</td><td>Auth/logging/protocol adaptation</td></tr>
+            <tr><td>BFF</td><td>Backend tailored per frontend type</td><td>Mobile BFF, web BFF, partner BFF</td></tr>
+            <tr><td>Chained service</td><td>Sequential dependency calls</td><td>Multi-step dependency lookup</td></tr>
+            <tr><td>Branch service</td><td>Parallel fan-out and merge</td><td>Fetch independent datasets quickly</td></tr>
+            <tr><td>Shared data service</td><td>Central reference-data service</td><td>Use sparingly for truly shared low-volatility data</td></tr>
+            <tr><td>Async messaging service</td><td>Publishes/subscribes events only</td><td>Notification, analytics, audit flows</td></tr>
+          </table>
+          <details>
+            <summary>Types Q&A</summary>
+            <p><strong>Aggregator vs BFF?</strong> Aggregator is general data combiner; BFF is dedicated per client type and team.</p>
+            <p><strong>When sync vs async?</strong> Sync when immediate next-step dependence exists; async for background and decoupled operations.</p>
+            <p><strong>Risk of long synchronous chains?</strong> Latency and fragility compound with each hop.</p>
+          </details>
+        </section>
+
+        <section data-level="beginner intermediate" id="addition-b">
+          <h2>Addition B - WhatsApp vs Phone Call Analogy</h2>
+          <table>
+            <tr><th>Phone call (synchronous)</th><th>WhatsApp message (asynchronous)</th></tr>
+            <tr><td>Both parties must be available now</td><td>Sender and receiver can operate at different times</td></tr>
+            <tr><td>Caller waits</td><td>Sender continues immediately</td></tr>
+            <tr><td>Software equivalent: REST call</td><td>Software equivalent: Message queue/event bus</td></tr>
+          </table>
+          <h3>Group chat analogy for publish-subscribe</h3>
+          <ul>
+            <li>Direct message = point-to-point queue</li>
+            <li>Group message = one publisher, many subscribers</li>
+            <li>Adding new subscriber does not require publisher change</li>
+          </ul>
+          <h3>Read receipt analogy for delivery guarantees</h3>
+          <table>
+            <tr><th>WhatsApp signal</th><th>Software equivalent</th></tr>
+            <tr><td>Sent</td><td>Published to broker</td></tr>
+            <tr><td>Delivered</td><td>Available in consumer queue</td></tr>
+            <tr><td>Read</td><td>Processed and acknowledged</td></tr>
+            <tr><td>Not processed</td><td>Retries exhausted -> DLQ</td></tr>
+          </table>
+          <details>
+            <summary>Analogy Q&A</summary>
+            <p><strong>How to explain sync vs async to non-technical person?</strong> Phone call requires immediate presence; WhatsApp decouples time.</p>
+            <p><strong>Why async is more resilient?</strong> Work queues when consumer is down and resumes on recovery instead of immediate caller failure.</p>
+          </details>
+        </section>
+
+        <section data-level="beginner intermediate advanced" id="micro-glossary">
+          <h2>Quick Reference - Key Terms</h2>
+          <table>
+            <tr><th>Term</th><th>Definition</th></tr>
+            <tr><td>Microservices</td><td>Independent services each owning a business capability</td></tr>
+            <tr><td>Bounded Context</td><td>Domain boundary with consistent model/language</td></tr>
+            <tr><td>API Gateway</td><td>Single entry for auth, routing, and policy enforcement</td></tr>
+            <tr><td>Database per Service</td><td>No cross-service direct DB access</td></tr>
+            <tr><td>Saga</td><td>Local transactions with compensation across services</td></tr>
+            <tr><td>Outbox</td><td>Atomic event persistence with business write</td></tr>
+            <tr><td>Idempotency</td><td>Same operation repeated produces same net effect</td></tr>
+            <tr><td>CQRS</td><td>Separate write and read models</td></tr>
+            <tr><td>Circuit Breaker</td><td>Fail-fast wrapper around unhealthy downstream</td></tr>
+            <tr><td>Bulkhead</td><td>Resource pool isolation</td></tr>
+            <tr><td>DLQ</td><td>Failed-message holding queue for investigation/replay</td></tr>
+            <tr><td>Liveness Probe</td><td>Checks if service process is alive</td></tr>
+            <tr><td>Readiness Probe</td><td>Checks if service can receive traffic now</td></tr>
+            <tr><td>Structured Logging</td><td>JSON logs with queryable fields</td></tr>
+            <tr><td>Sidecar Pattern</td><td>Helper container for cross-cutting runtime concerns</td></tr>
+            <tr><td>Service Mesh</td><td>Infrastructure for mTLS and traffic policies</td></tr>
+          </table>
+        </section>
+
+        <section data-level="beginner intermediate advanced" id="micro-live-learn">
+          <h2>Live Microsoft Learn Extensions</h2>
+          <table>
+            <tr><th>Topic</th><th>Live resource</th><th>How to use</th></tr>
+            <tr><td>Circuit breaker operations</td><td><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/azure/architecture/patterns/circuit-breaker">Circuit Breaker pattern</a></td><td>Map open/half-open/closed state to your service-level retry policy.</td></tr>
+            <tr><td>Compensation workflows</td><td><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/azure/architecture/patterns/compensating-transaction">Compensating Transaction</a></td><td>Design and audit compensation steps for multi-service operations.</td></tr>
+            <tr><td>Service modernization path</td><td><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/azure/architecture/patterns/strangler-fig">Strangler Fig pattern</a></td><td>Apply incremental extraction to legacy workloads.</td></tr>
+            <tr><td>Internal high-performance RPC</td><td><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/aspnet/core/grpc/?view=aspnetcore-10.0">gRPC on .NET</a></td><td>Use for internal service-to-service performance-sensitive calls.</td></tr>
+            <tr><td>AKS reliability posture</td><td><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/azure/architecture/reference-architectures/containers/aks-mission-critical/mission-critical-app-platform">AKS mission-critical platform</a></td><td>Understand production-grade reliability controls on Kubernetes.</td></tr>
+          </table>
+        </section>
+
+        <div class="footer">Microservices Architecture Team Guide - June 2026</div>
+      </section>
+    </main>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
