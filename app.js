@@ -133,4 +133,13 @@
   }
 
   window.addEventListener("scroll", activeToc, { passive: true });
+
+  // Mark external links with visual indicator
+  (function() {
+    var links = qsa("a[href^='https://learn.microsoft.com']");
+    links.forEach(function(link) {
+      link.classList.add("external-link");
+      link.title = (link.title ? link.title + " (opens in new tab)" : "Opens Microsoft Learn in new tab");
+    });
+  })();
 })();
