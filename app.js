@@ -73,6 +73,18 @@
       var a = document.createElement("a");
       a.href = "#" + h.id;
       a.textContent = h.textContent;
+      
+      // Add smooth scroll on click
+      a.addEventListener("click", function (e) {
+        e.preventDefault();
+        var target = document.getElementById(h.id);
+        if (target) {
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+          // Update active state immediately
+          setTimeout(activeToc, 100);
+        }
+      });
+      
       toc.appendChild(a);
     });
   }
